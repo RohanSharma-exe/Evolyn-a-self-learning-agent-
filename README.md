@@ -44,7 +44,7 @@ The default is:
 MODEL=openrouter/ox-alpha
 ```
 
-OpenRouter currently lists **Ox Alpha** as a 1,048,576-token reasoning model aimed at coding and sustained agentic work, with tool-calling support. citehttps://openrouter.ai/models
+OpenRouter currently lists **Ox Alpha** as a 1,048,576-token reasoning model aimed at coding and sustained agentic work, with tool-calling support.
 
 You can also configure a comma-separated fallback chain:
 
