@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,10 +25,22 @@ class Settings(BaseSettings):
     nvidia_api_key: str | None = None
     ollama_base_url: str = "http://localhost:11434"
 
-    # These may stay portable in .env. They are resolved to absolute paths
-    # before Cognee is imported because Cognee validates paths at import time.
-    system_root_directory: str = "./data/cognee/system"
-    data_root_directory: str = "./data/cognee/data"
+    # Use Evolyn-prefixed names so Cognee cannot re-read portable relative
+    # paths from .env and overwrite the absolute paths prepared below.
+    system_root_directory: str = Field(
+        "./data/cognee/system",
+        validation_alias=AliasChoices(
+            "EVOLYN_SYSTEM_ROOT_DIRECTORY",
+            "SYSTEM_ROOT_DIRECTORY",
+        ),
+    )
+    data_root_directory: str = Field(
+        "./data/cognee/data",
+        validation_alias=AliasChoices(
+            "EVOLYN_DATA_ROOT_DIRECTORY",
+            "DATA_ROOT_DIRECTORY",
+        ),
+    )
 
     langfuse_public_key: str | None = None
     langfuse_secret_key: str | None = None
