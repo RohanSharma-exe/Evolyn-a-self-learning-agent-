@@ -20,6 +20,10 @@ dev = [
     "ruff>=0.12,<1",
 ]
 
+[project.scripts]
+evolyn = "evolyn.cli:main"
+evolyn-mcp = "evolyn.tools.server:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
