@@ -14,20 +14,18 @@ class CogneeMemory:
         self._initialized = False
 
     async def initialize(self) -> None:
-        """Point Cognee at Evolyn-owned writable storage before memory operations."""
+        """Ensure Evolyn's writable Cognee directories exist."""
         if self._initialized:
             return
 
-        project_root = Path.cwd()
-        system_root = project_root / "data" / "cognee" / "system"
-        data_root = project_root / "data" / "cognee" / "data"
+        system_root = Path(settings.system_root_directory).resolve()
+        data_root = Path(settings.data_root_directory).resolve()
         system_root.mkdir(parents=True, exist_ok=True)
         data_root.mkdir(parents=True, exist_ok=True)
 
-        # Cognee 1.x initializes its local stores through remember/recall.
-        # There is no public cognee.setup() API in the current package.
-        cognee.config.system_root_directory(str(system_root.resolve()))
-        cognee.config.data_root_directory(str(data_root.resolve()))
+        # The storage environment is exported by evolyn.config before this
+        # module imports Cognee, so Cognee's initial database configuration
+        # already points at these directories.
         self._initialized = True
 
     async def remember(self, experience: Experience) -> None:
@@ -49,11 +47,20 @@ class CogneeMemory:
 
     async def search(self, query: str, limit: int = 8) -> list[str]:
         await self.initialize()
-        results = await cognee.recall(
-            query_text=query,
-            datasets=[self.dataset],
-            top_k=limit,
-        )
+        try:
+            results = await cognee.recall(
+                query_text=query,
+                datasets=[self.dataset],
+                top_k=limit,
+            )
+        except Exception as exc:
+            # A brand-new Evolyn installation has no Cognee database/user yet.
+            # An empty memory is a valid initial state; the first successful
+            # experience will create persistent memory through remember().
+            message = str(exc)
+            if "RecallPreconditionError" in message or "DatabaseNotCreatedError" in message:
+                return []
+            raise
         return [self._text(item) for item in results[:limit]]
 
     @staticmethod
