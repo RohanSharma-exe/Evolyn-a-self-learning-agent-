@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import cognee
 
+from evolyn.config import settings
 from evolyn.models import Experience
 
 
@@ -11,10 +14,20 @@ class CogneeMemory:
         self._initialized = False
 
     async def initialize(self) -> None:
-        """Initialize Cognee's local database before any memory operation."""
+        """Point Cognee at Evolyn-owned writable storage before memory operations."""
         if self._initialized:
             return
-        await cognee.setup()
+
+        project_root = Path.cwd()
+        system_root = project_root / "data" / "cognee" / "system"
+        data_root = project_root / "data" / "cognee" / "data"
+        system_root.mkdir(parents=True, exist_ok=True)
+        data_root.mkdir(parents=True, exist_ok=True)
+
+        # Cognee 1.x initializes its local stores through remember/recall.
+        # There is no public cognee.setup() API in the current package.
+        cognee.config.system_root_directory(str(system_root.resolve()))
+        cognee.config.data_root_directory(str(data_root.resolve()))
         self._initialized = True
 
     async def remember(self, experience: Experience) -> None:
