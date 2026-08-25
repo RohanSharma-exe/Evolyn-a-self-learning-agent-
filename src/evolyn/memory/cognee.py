@@ -8,8 +8,17 @@ class CogneeMemory:
 
     def __init__(self, dataset: str = "evolyn_experiences") -> None:
         self.dataset = dataset
+        self._initialized = False
+
+    async def initialize(self) -> None:
+        """Initialize Cognee's local database before any memory operation."""
+        if self._initialized:
+            return
+        await cognee.setup()
+        self._initialized = True
 
     async def remember(self, experience: Experience) -> None:
+        await self.initialize()
         text = (
             f"Experience ID: {experience.id}\n"
             f"Task: {experience.task}\n"
@@ -26,6 +35,7 @@ class CogneeMemory:
         )
 
     async def search(self, query: str, limit: int = 8) -> list[str]:
+        await self.initialize()
         results = await cognee.recall(
             query_text=query,
             datasets=[self.dataset],
