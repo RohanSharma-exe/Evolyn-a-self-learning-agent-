@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,9 +21,15 @@ class Settings(BaseSettings):
     nvidia_api_key: str | None = None
     ollama_base_url: str = "http://localhost:11434"
 
+    # Cognee storage. These environment variables must exist before cognee
+    # is imported because Cognee initializes its database configuration at import time.
+    system_root_directory: str = "./data/cognee/system"
+    data_root_directory: str = "./data/cognee/data"
+
     langfuse_public_key: str | None = None
     langfuse_secret_key: str | None = None
     langfuse_base_url: str = "https://cloud.langfuse.com"
+    langfuse_enabled: bool = False
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -38,3 +47,15 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Cognee reads these variables during import. Export the resolved values now,
+# before any Evolyn module imports cognee.
+_project_root = Path.cwd()
+os.environ.setdefault(
+    "SYSTEM_ROOT_DIRECTORY",
+    str((_project_root / settings.system_root_directory).resolve()),
+)
+os.environ.setdefault(
+    "DATA_ROOT_DIRECTORY",
+    str((_project_root / settings.data_root_directory).resolve()),
+)
