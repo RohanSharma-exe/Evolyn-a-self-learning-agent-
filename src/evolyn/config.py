@@ -3,7 +3,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Change these values in .env; the agent core never needs to change.
-    model: str = "openrouter/ox-alpha"
+    # LiteLLM uses openrouter/<OpenRouter model ID> for OpenRouter routing.
+    model: str = "openrouter/stealth/ox-alpha"
     fallback_models: str = ""
     temperature: float = 0.2
     memory_top_k: int = 8
