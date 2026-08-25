@@ -34,6 +34,26 @@ Langfuse observes the full run.
 - **LibreChat** for the user-facing agent UI
 - **pytest + Ruff** for quality and regression tests
 
+## Model configuration
+
+Evolyn's model is deliberately **not hard-coded into the agent**. Change the model in `.env` with `MODEL=` and the rest of the application stays unchanged.
+
+The default is:
+
+```env
+MODEL=openrouter/ox-alpha
+```
+
+OpenRouter currently lists **Ox Alpha** as a 1,048,576-token reasoning model aimed at coding and sustained agentic work, with tool-calling support. citehttps://openrouter.ai/models
+
+You can also configure a comma-separated fallback chain:
+
+```env
+FALLBACK_MODELS=
+```
+
+For example, later you can use Gemini, Groq, NVIDIA, or an Ollama model simply by changing `.env`; no agent code needs to change. The exact model identifier is provider-specific and intentionally remains configuration rather than application logic.
+
 ## Run locally
 
 Windows CMD:
@@ -45,7 +65,7 @@ uv sync --dev
 copy .env.example .env
 ```
 
-Set `OPENAI_API_KEY`, `LLM_API_KEY`, and `EMBEDDING_API_KEY` in `.env`. For the first local smoke test, the three can use the same OpenAI key.
+Set `OPENROUTER_API_KEY` in `.env` for the default Ox Alpha configuration. If Cognee is configured to use a separate provider, also set its corresponding `LLM_API_KEY` and embedding credentials.
 
 Then:
 
