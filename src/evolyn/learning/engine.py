@@ -1,4 +1,5 @@
 from litellm import acompletion
+from litellm.exceptions import RateLimitError
 
 from evolyn.config import settings
 from evolyn.models import Experience
@@ -30,8 +31,12 @@ class LearningEngine:
             f"Outcome: {experience.outcome}\n"
             f"Success: {experience.success}"
         )
-        lesson = (await self.llm.generate(
-            "You are Evolyn's learning evaluator. Prefer concrete, testable lessons.",
-            prompt,
-        )).strip()
+        try:
+            lesson = (await self.llm.generate(
+                "You are Evolyn's learning evaluator. Prefer concrete, testable lessons.",
+                prompt,
+            )).strip()
+        except RateLimitError:
+            return ""
+
         return "" if lesson.upper() == "NONE" else lesson
