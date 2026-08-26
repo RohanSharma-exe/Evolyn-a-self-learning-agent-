@@ -1,4 +1,4 @@
-import os
+from os import environ
 from pathlib import Path
 
 from pydantic import AliasChoices, Field
@@ -75,5 +75,5 @@ def _absolute_project_path(value: str) -> str:
 
 # Cognee constructs its BaseConfig while importing the package. Export the
 # resolved absolute paths before any Evolyn module imports cognee.
-os.environ["SYSTEM_ROOT_DIRECTORY"] = _absolute_project_path(settings.system_root_directory)
-os.environ["DATA_ROOT_DIRECTORY"] = _absolute_project_path(settings.data_root_directory)
+environ["SYSTEM_ROOT_DIRECTORY"] = _absolute_project_path(settings.system_root_directory)
+environ["DATA_ROOT_DIRECTORY"] = _absolute_project_path(settings.data_root_directory)
