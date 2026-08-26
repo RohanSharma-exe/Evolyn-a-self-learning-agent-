@@ -8,7 +8,11 @@ from evolyn.observability import observe_agent, trace_url
 class Evolyn:
     """Small orchestration core; infrastructure stays behind adapters."""
 
-    def __init__(self, memory: CogneeMemory | None = None, learner: LearningEngine | None = None) -> None:
+    def __init__(
+        self,
+        memory: CogneeMemory | None = None,
+        learner: LearningEngine | None = None,
+    ) -> None:
         self.memory = memory or CogneeMemory(settings.memory_dataset)
         self.learner = learner or LearningEngine()
 
