@@ -1,7 +1,6 @@
 import os
 from collections.abc import Callable
-from functools import wraps
-from typing import Any, ParamSpec, TypeVar
+from typing import ParamSpec, TypeVar
 
 import litellm
 from langfuse import get_client, observe
@@ -31,7 +30,7 @@ def _langfuse_enabled() -> bool:
     )
 
 
-def _plain_observe_agent(func: Callable[P, R]) -> Callable[P, R]:
+def _plain_observe_agent[**P, R](func: Callable[P, R]) -> Callable[P, R]:
     return func
 
 
